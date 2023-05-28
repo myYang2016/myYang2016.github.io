@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>canvas实现的画板 | 羊锡贵的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="canvas实现的画板 最近一直负责公司云课堂的ppt部分，里面包括画板。这部分的功能我觉得值得分享出来。github地址个人博客地址  demo引入直接引用lib目录下的index.js，引入Paintbrush类。 1import Paintbrush from &amp;#x27;..&#x2F;lib&#x2F;index&amp;#x27;; 初始化12345const canvasCtr &#x3D; new Paintbrush">
+<meta property="og:type" content="article">
+<meta property="og:title" content="canvas实现的画板">
+<meta property="og:url" content="https://myyang2016.github.io/2019/04/21/canvas%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%94%BB%E6%9D%BF/index.html">
+<meta property="og:site_name" content="羊锡贵的博客">
+<meta property="og:description" content="canvas实现的画板 最近一直负责公司云课堂的ppt部分，里面包括画板。这部分的功能我觉得值得分享出来。github地址个人博客地址  demo引入直接引用lib目录下的index.js，引入Paintbrush类。 1import Paintbrush from &amp;#x27;..&#x2F;lib&#x2F;index&amp;#x27;; 初始化12345const canvasCtr &#x3D; new Paintbrush">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-04-21T07:01:47.000Z">
+<meta property="article:modified_time" content="2023-05-28T07:02:03.806Z">
+<meta property="article:author" content="羊锡贵">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="羊锡贵的博客" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">羊锡贵的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">一个程序员的日常</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://myYang2016.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-canvas实现的画板" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/04/21/canvas%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%94%BB%E6%9D%BF/" class="article-date">
+  <time class="dt-published" datetime="2019-04-21T07:01:47.000Z" itemprop="datePublished">2019-04-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      canvas实现的画板
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="canvas实现的画板"><a href="#canvas实现的画板" class="headerlink" title="canvas实现的画板"></a>canvas实现的画板</h2><blockquote>
+<p>最近一直负责公司云课堂的ppt部分，里面包括画板。这部分的功能我觉得值得分享出来。<br><a target="_blank" rel="noopener" href="https://github.com/MrYang2016/paintbrush">github地址</a><br><a target="_blank" rel="noopener" href="http://www.yxgweb.com/">个人博客地址</a></p>
+</blockquote>
+<h3 id="demo"><a href="#demo" class="headerlink" title="demo"></a><a target="_blank" rel="noopener" href="http://www.yxgweb.com/demo/paintbrush/">demo</a></h3><h4 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h4><p>直接引用lib目录下的index.js，引入Paintbrush类。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">Paintbrush</span> <span class="keyword">from</span> <span class="string">&#x27;../lib/index&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<h4 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> canvasCtr = <span class="keyword">new</span> <span class="title class_">Paintbrush</span>(<span class="string">&#x27;#canvasDiv&#x27;</span>, &#123;</span><br><span class="line">    <span class="attr">canEdit</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">width</span>: <span class="number">600</span>,</span><br><span class="line">    <span class="attr">height</span>: <span class="number">600</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>直接new一下，第一个参数是画板元素，可以是选择器，也可以是dom元素，是必填的。第二个参数是相关设置，参数说明如下：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+<th>类型</th>
+<th>是否必填</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>type</td>
+<td>画板绘制时的类型，line表示画笔，arrowLine表示箭头，straightLine表示直线，rect表示方形，circle表示圆形，ellipse表示椭圆</td>
+<td>String</td>
+<td>否</td>
+<td>line</td>
+</tr>
+<tr>
+<td>width</td>
+<td>画板宽度，单位默认为px</td>
+<td>Number</td>
+<td>否</td>
+<td>500</td>
+</tr>
+<tr>
+<td>height</td>
+<td>画板高度，单位默认为px</td>
+<td>Number</td>
+<td>否</td>
+<td>500</td>
+</tr>
+<tr>
+<td>lineWidth</td>
+<td>线条宽度</td>
+<td>Number</td>
+<td>否</td>
+<td>3</td>
+</tr>
+<tr>
+<td>strokeStyle</td>
+<td>画笔颜色</td>
+<td>String</td>
+<td>否</td>
+<td>red</td>
+</tr>
+<tr>
+<td>canEdit</td>
+<td>是否支持绘制，true表示支持绘制</td>
+<td>Boolean</td>
+<td>否</td>
+<td>false</td>
+</tr>
+</tbody></table>
+<h4 id="绘制"><a href="#绘制" class="headerlink" title="绘制"></a>绘制</h4><p>在绘制过程中，主要是控制绘制图形的类型，就是你要绘制圆还是直线，以及线条的粗细、颜色等。比如改变颜色：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">canvasCtr.<span class="title function_">setStyle</span>(&#123; <span class="attr">strokeStyle</span>: <span class="string">&#x27;#abcdef&#x27;</span> &#125;);</span><br></pre></td></tr></table></figure>
+<p>具体方法说明如下：</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>功能</th>
+<th>参数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>setStyle</td>
+<td>设置颜色和线条粗细</td>
+<td>为一个对象，strokeStyle表示颜色，lineWidth表示线条的粗细</td>
+</tr>
+<tr>
+<td>setType</td>
+<td>设置绘制的类型</td>
+<td>为一个字符串，line表示画笔，arrowLine表示箭头，straightLine表示直线，rect表示方形，circle表示圆形，ellipse表示椭圆</td>
+</tr>
+<tr>
+<td>clear</td>
+<td>清空画板</td>
+<td>是否清空历史数据，默认为false</td>
+</tr>
+<tr>
+<td>switchToDlete</td>
+<td>开启删除模式，这时不能画，点击指定已画线条进行删除</td>
+<td>无</td>
+</tr>
+</tbody></table>
+<h4 id="获取已绘制数据"><a href="#获取已绘制数据" class="headerlink" title="获取已绘制数据"></a>获取已绘制数据</h4><p>可以直接读取地段way来获取数据，如</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(canvasCtr.<span class="property">way</span>);</span><br><span class="line"><span class="comment">// &#123; line: &#123;&#125;, straightLine: &#123;&#125;, rect: &#123;&#125;, circle: &#123;&#125;, ellipse: &#123;&#125;, arrowLine: &#123;&#125; &#125;</span></span><br></pre></td></tr></table></figure>
+<p>输出的数据格式为一个对象，字段分别为图形的类型。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2019/04/21/canvas%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%94%BB%E6%9D%BF/" data-id="cli72yd3t0000wg6phsrvfhqg" data-title="canvas实现的画板" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/05/28/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/05/28/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2019/04/21/canvas%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%94%BB%E6%9D%BF/">canvas实现的画板</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 羊锡贵<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
