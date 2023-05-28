@@ -104,5 +104,5 @@ theme: landscape
 deploy:
   type: git
   repo: https://github.com/myYang2016/myYang2016.github.io.git
-  branch: [branch]
-  message: [message]
+  branch: gh-pages
+  message: 部署
