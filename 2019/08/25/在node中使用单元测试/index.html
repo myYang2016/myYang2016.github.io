@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>在node中使用单元测试 | 羊锡贵的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="在node中使用单元测试 背景：目前聊天室开发时，都是在前端页面进行调试。在聊天室项目本身没有提供测试的环境。所以这里开始引入单元测试，方便后面的开发。  1、使用的工具主要是用mocha和node原生的断言assert。 安装： 1npm install mocha --save-dev 可以局部安装并在package.json中，添加test，如 1234&quot;test&quot;: &amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在node中使用单元测试">
+<meta property="og:url" content="https://myyang2016.github.io/2019/08/25/%E5%9C%A8node%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/index.html">
+<meta property="og:site_name" content="羊锡贵的博客">
+<meta property="og:description" content="在node中使用单元测试 背景：目前聊天室开发时，都是在前端页面进行调试。在聊天室项目本身没有提供测试的环境。所以这里开始引入单元测试，方便后面的开发。  1、使用的工具主要是用mocha和node原生的断言assert。 安装： 1npm install mocha --save-dev 可以局部安装并在package.json中，添加test，如 1234&quot;test&quot;: &amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-25T07:12:29.000Z">
+<meta property="article:modified_time" content="2023-05-28T07:12:44.268Z">
+<meta property="article:author" content="羊锡贵">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="羊锡贵的博客" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">羊锡贵的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">一个程序员的日常</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://myYang2016.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-在node中使用单元测试" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/08/25/%E5%9C%A8node%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="article-date">
+  <time class="dt-published" datetime="2019-08-25T07:12:29.000Z" itemprop="datePublished">2019-08-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      在node中使用单元测试
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="在node中使用单元测试"><a href="#在node中使用单元测试" class="headerlink" title="在node中使用单元测试"></a>在node中使用单元测试</h2><blockquote>
+<p>背景：目前聊天室开发时，都是在前端页面进行调试。在聊天室项目本身没有提供测试的环境。所以这里开始引入单元测试，方便后面的开发。</p>
+</blockquote>
+<h4 id="1、使用的工具"><a href="#1、使用的工具" class="headerlink" title="1、使用的工具"></a>1、使用的工具</h4><p>主要是用<a target="_blank" rel="noopener" href="https://mochajs.org/#asynchronous-code">mocha</a>和node原生的断言<a target="_blank" rel="noopener" href="https://nodejs.org/api/assert.html">assert</a>。</p>
+<p>安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install mocha --save-dev</span><br></pre></td></tr></table></figure>
+<p>可以局部安装并在package.json中，添加test，如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&quot;test&quot;: &quot;mocha ./test/*.js&quot;</span><br><span class="line">```````</span><br><span class="line">这样所有测试文件都会被执行。</span><br><span class="line">也可以全局安装，如</span><br></pre></td></tr></table></figure>
+<p>npm install mocha -g</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">执行单个测试文件，直接在命令行中运行，如执行测试文件testForSign.js</span><br></pre></td></tr></table></figure>
+<p>mocha test&#x2F;testForsign.js</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#### 2、例子</span><br><span class="line">从聊天室出发，我们有接口、socket消息、通用方法、数据库测试等，下面进行举例。</span><br><span class="line">##### 接口</span><br><span class="line">下面介绍对开始签到接口的测试：</span><br><span class="line">`````javascript</span><br><span class="line">const &#123; ajax, createApiSign &#125; = require(&#x27;../common/common&#x27;)();</span><br><span class="line">const assert = require(&#x27;assert&#x27;);</span><br><span class="line"></span><br><span class="line">describe(&#x27;to test sign&#x27;, () =&gt; &#123; // 对测试的描述</span><br><span class="line">  it(&#x27;test request port&#x27;, async () =&gt; &#123; // 开始一次测试</span><br><span class="line">  // 使用try捕捉所有错误，assert断言本身不通过时，也会抛出错误</span><br><span class="line">    try &#123;</span><br><span class="line">      const result = await toStartSign();</span><br><span class="line">      // 这里断言接口返回是否为200，如果不是，会抛出错误。这里第三个参数可以加上，表示需要的错误提示信息。</span><br><span class="line">      assert.equal(result.code, 200);</span><br><span class="line">    &#125; catch (err) &#123;</span><br><span class="line">      // 这里直接使用fail抛出异常</span><br><span class="line">      assert.fail(&#x27;request startSign port fail, &#x27; + err.message);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// 请求开始签到接口的函数</span><br><span class="line">function toStartSign() &#123;</span><br><span class="line">  const formData = &#123;</span><br><span class="line">    roomId: &#x27;200060&#x27;,</span><br><span class="line">    message: &#x27;开始签到啦！！！！&#x27;,</span><br><span class="line">    userId: &#x27;1566315813544&#x27;,</span><br><span class="line">    timestamp: Date.now(),</span><br><span class="line">  &#125;;</span><br><span class="line">  formData.sign = createApiSign(&#x27;polyvChatSign&#x27;, formData);</span><br><span class="line">  return ajax(&#123;</span><br><span class="line">    url: &#x27;https://apichat.polyv.net/front/startSign&#x27;,</span><br><span class="line">    formData,</span><br><span class="line">    dataType: &#x27;body&#x27;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在命令行中输入<code>mocha test/testForSign.js</code>，执行后的结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0 passing (244ms)</span><br><span class="line">  1 failing</span><br><span class="line"></span><br><span class="line">  1) to <span class="built_in">test</span> sign</span><br><span class="line">       <span class="built_in">test</span> request port:</span><br><span class="line">     AssertionError [ERR_ASSERTION]: request startSign port fail, 找不到用户socketId，用户未登陆聊天室</span><br><span class="line">      at Context.it (<span class="built_in">test</span>/testForSign.js:10:14)</span><br><span class="line">      at process._tickCallback (internal/process/next_tick.js:68:7)</span><br></pre></td></tr></table></figure>
+<p>由于运行时未登陆聊天室，所以接口返回的状态码不是200</p>
+<h5 id="socket消息"><a href="#socket消息" class="headerlink" title="socket消息"></a>socket消息</h5><p>使用模块<code>socket.io-client</code>连接聊天室，如</p>
+<pre><code class="javascript">// 连接聊天室，公共方法，在common.js里面
+connectSocket(&#123; userId = &#39;123456&#39;, nick = &#39;yang&#39;, roomId = 200060, type = &#39;user&#39; &#125; = &#123;&#125;) &#123;
+    // 连接聊天室
+    const socket = io.connect(&#39;ws://chat.polyv.net&#39;, &#123;
+      &#39;query&#39;: &#39;token=&#39;,
+      &#39;transports&#39;: [&#39;websocket&#39;]
+    &#125;);
+    if (!(userId &amp;&amp; nick &amp;&amp; roomId &amp;&amp; type)) return socket;
+    // 发送login事件进行登陆
+    socket.on(&#39;connect&#39;, function () &#123;
+      var loginData = &#123;
+        EVENT: &#39;LOGIN&#39;,
+        values: [nick, &#39;https://livestatic.videocc.net/assets/wimages/missing_face.png&#39;, userId],
+        roomId,
+        type
+      &#125;;
+      socket.emit(&#39;message&#39;,JSON.stringify(loginData));
+    &#125;);
+    return socket;
+&#125;
+</code></pre>
+<p>下面测试开始签到，使用事件<code>SIGN_IN</code>来举例测试：</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2019/08/25/%E5%9C%A8node%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" data-id="cli7399bx0007ov6ph7ms61ni" data-title="在node中使用单元测试" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/11/24/node%E5%9C%A8%E4%BD%BF%E7%94%A8socket%E6%97%B6%EF%BC%8C%E5%A6%82%E4%BD%95%E9%9D%A2%E5%AF%B9%E9%AB%98%E5%B9%B6%E5%8F%91/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          node在使用socket时，如何面对高并发
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/04/21/canvas%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%94%BB%E6%9D%BF/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">canvas实现的画板</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/">nodejs内核原理</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/">websocket学习</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/">nodejs中的流Stream</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/19/%E4%BA%91%E6%B8%B8%E6%88%8F/">云游戏</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/13/%E8%81%8A%E5%A4%A9%E5%AE%A4%E8%87%AA%E5%8A%A8%E5%88%86%E6%88%BF%E9%97%B4%E8%AE%BE%E8%AE%A1/">聊天室自动分房间设计</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 羊锡贵<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

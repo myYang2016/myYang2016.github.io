@@ -79,10 +79,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-hello-world" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <article id="post-nodejs内核原理" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2023/05/28/hello-world/" class="article-date">
-  <time class="dt-published" datetime="2023-05-28T06:58:11.628Z" itemprop="datePublished">2023-05-28</time>
+    <a href="/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/" class="article-date">
+  <time class="dt-published" datetime="2023-02-13T07:14:32.000Z" itemprop="datePublished">2023-02-13</time>
 </a>
     
   </div>
@@ -93,7 +93,7 @@
         
   
     <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/05/28/hello-world/">Hello World</a>
+      <a class="p-name article-title" href="/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/">nodejs内核原理</a>
     </h1>
   
 
@@ -101,24 +101,429 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+        <h3 id="nodejs内核原理"><a href="#nodejs内核原理" class="headerlink" title="nodejs内核原理"></a>nodejs内核原理</h3><blockquote>
+<p>这是书籍《Node.js设计模式》的读书笔记。</p>
+</blockquote>
+<h4 id="一、nodejs遵循的设计原则"><a href="#一、nodejs遵循的设计原则" class="headerlink" title="一、nodejs遵循的设计原则"></a>一、nodejs遵循的设计原则</h4><p>设计原则影响了每个技术栈的特点。nodejs有一下设计原则：</p>
+<ul>
+<li>短小精悍（便于理解和维护）</li>
+<li>提供的模块尽量不去扩展功能，且功能越简单越好（防止模块越变越大，如果需要新增功能）</li>
+</ul>
+<h4 id="二、事件循环"><a href="#二、事件循环" class="headerlink" title="二、事件循环"></a>二、事件循环</h4><p>io操作，就是需要电脑做一些任务，这些任务单单本机的cpu是无法独立完成的，需要cpu和其他外接设备或者网络一起完成。所以，io操作比一般的cpu计算要慢。如果io操作是同步的，即每次io操作都要等待完成，就会容易造成等待时间长，最后导致运行缓慢。一般的解决方案是把io操作放到线程去完成。但是在线程中，由于需要等待io操作完成，导致线程很多时候处于闲置等待状态，而且线程也会占据cpu和内存，所以一个io操作对应一个线程也是不可取的。nodejs采用的是，在一个线程中管理多个io操作（多路复用），并且利用回调来作为io操作结果的响应（解多路复用），从而减少了内存和cpu的占用。</p>
+<p>事件循环，即将所有的io操作都放到数组中，利用不同系统的事件分离管理机制，不断循环等待io操作的处理情况，完成的话就可以通过回调返回结果。</p>
+<h4 id="三、nodejs的核心模块"><a href="#三、nodejs的核心模块" class="headerlink" title="三、nodejs的核心模块"></a>三、nodejs的核心模块</h4><ul>
+<li>libuv，实现事件循环机制，能兼容各个平台的事件分离管理机制的差异。</li>
+<li>javascript基础功能库</li>
+<li>v8引擎，让nodejs能使用js和c++</li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://myyang2016.github.io/2023/05/28/hello-world/" data-id="cli72yd3y0001wg6pdzrw39zw" data-title="Hello World" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://myyang2016.github.io/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/" data-id="cli7399bs0002ov6p21o45ekf" data-title="nodejs内核原理" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-websocket学习" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/" class="article-date">
+  <time class="dt-published" datetime="2022-03-08T07:16:26.000Z" itemprop="datePublished">2022-03-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/">websocket学习</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="websocket学习"><a href="#websocket学习" class="headerlink" title="websocket学习"></a>websocket学习</h3><blockquote>
+<p>系统地学习websocket</p>
+</blockquote>
+<h4 id="什么是websocket"><a href="#什么是websocket" class="headerlink" title="什么是websocket"></a>什么是websocket</h4><p>现代web应用中，实现信息交互的需求比较复杂，需要全双工通信。而websocket协议就是针对这点，适合文本信息的双向通信的。<br>而传统的http，是单向的。而可以利用轮询、长链接等手段，也能在http下实现双向通信，但是由于http流程繁琐，且每次请求携带的头部信息比较多，导致贷款和延时比较高，性能低。<br>除了websocket，实时双向通信还有SSE、SPDY、webrtc等。SSE主要用来服务端单向通知客户端信息的。SPDY是在文档信息实时通信应用的。WEBRTC是音视频实时通信的。</p>
+<h4 id="websocket-api"><a href="#websocket-api" class="headerlink" title="websocket api"></a>websocket api</h4><p>可以使用on<event>或者addEventListen，跟js原生的事件机制是一样的。<br>事件有open、disconnect、error、close<br>有websocket.readyState表示当前socket的链接状态，0表示正在链接中，1表示链接成功。<br>可以传送字符串和二进制类型，其中可以跟File和webrtc等api结合使用。</p>
+<h4 id="websocket-协议"><a href="#websocket-协议" class="headerlink" title="websocket 协议"></a>websocket 协议</h4><p>websocket是在http协议的基础上，加上upgrade：websocket，来对协议进行升级成为websocket连接。<br>连接需要发送响应键值。客户端连接是，通过set-websocket-key来传递键值，服务端经过添加协议串并hash后，通过字段set-websocket-Accept返回。<br>websocket本身可以关闭，但也有各种异常关闭。</p>
+<h4 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h4><p>每次websocket握手连接时，携带的set-websocket-key以及服务端响应的set-websocket-Accept都是为了保护非websocket服务器不会收到跨协议攻击。因为如果没有set-websocket-Accept，非websocket服务器会被当成websocket使用，从而造成跨协议攻击。屏蔽主要是在传递的websocket消息中，对二进制进行异或操作，从而起到安全作用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/" data-id="cli7399bv0004ov6p9rk3e83k" data-title="websocket学习" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-nodejs中的流Stream" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/" class="article-date">
+  <time class="dt-published" datetime="2022-02-26T07:15:59.000Z" itemprop="datePublished">2022-02-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/">nodejs中的流Stream</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="nodejs中的流Stream"><a href="#nodejs中的流Stream" class="headerlink" title="nodejs中的流Stream"></a>nodejs中的流Stream</h3><blockquote>
+<p>了解一下stream，平时用nodejs写的接口，或者文件上传等，其原理都是流，所以很有必要仔细了解流的原理。</p>
+</blockquote>
+<h4 id="一、自己的理解"><a href="#一、自己的理解" class="headerlink" title="一、自己的理解"></a>一、自己的理解</h4><p>在处理数据时，可能需要经过多个步骤。比如编译一段代码，需要先读取文件，然后遍历文件中的字符，解析后再写入新的文件中。这个过程可以有两种方式去实现。第一种，直接读取整个文件，读取完成再遍历并生成编译结果，然后再写入新的文件。另一种是，一遍读取文件，读取成功的部分先拿去编译，编译的同时进行编译结果的写入。这样就能充分利用多个io操作的并发进行，同时也能减少内存占用。第二种方式就是流的使用。流是一种编程设计模式，在多种语言都有实现。</p>
+<h4 id="二、nodejs中流的分类"><a href="#二、nodejs中流的分类" class="headerlink" title="二、nodejs中流的分类"></a>二、nodejs中流的分类</h4><p>分为可读流、可写流、双工流、Transform、throwFlow。<br>双工流和Transform的区别：双工流中的可读和可写是分开并独立的。Transform读入并经过处理后，可以作为可读数据输出。<br>throwFlow主要作为管道监控，或者作为一个代理管道，可以在被read的时候，再去建立真正需要的流，从而防止一开始就建立多个流，最终导致打开了过多文件而报错。</p>
+<h4 id="三、流的组合和并发执行"><a href="#三、流的组合和并发执行" class="headerlink" title="三、流的组合和并发执行"></a>三、流的组合和并发执行</h4><p>各个流可以并发执行，而不需要同步运行。这个需要在read中建立流，并马上done，不等待流的运行。<br>流也可以组合起来，变成另外一个流供控制。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/" data-id="cli7399bq0001ov6p3yjv6q1m" data-title="nodejs中的流Stream" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-云游戏" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/02/19/%E4%BA%91%E6%B8%B8%E6%88%8F/" class="article-date">
+  <time class="dt-published" datetime="2022-02-19T07:15:33.000Z" itemprop="datePublished">2022-02-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/02/19/%E4%BA%91%E6%B8%B8%E6%88%8F/">云游戏</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="云游戏"><a href="#云游戏" class="headerlink" title="云游戏"></a>云游戏</h3><blockquote>
+<p>认识一下云游戏。<a target="_blank" rel="noopener" href="https://www-file.huawei.com/-/media/corporate/pdf/ilab/2019/cloud_game_whitepaper.pdf">参考文档</a></p>
+</blockquote>
+<h4 id="一、什么是云游戏"><a href="#一、什么是云游戏" class="headerlink" title="一、什么是云游戏"></a>一、什么是云游戏</h4><p>将游戏上云，就是在供应商提供的云服务器上运行游戏，负责游戏渲染、存储、计算，然后再把渲染结果传到用户屏幕，从而降低对玩家硬件的要求。另一方面，上云后可以实现边缘计算，从而降低游戏的互动延时，提升游戏体验。</p>
+<p>在云游戏中，终端只需要负责解码收到的视频流以及发送玩家操作的指令。</p>
+<h4 id="二、技术实现"><a href="#二、技术实现" class="headerlink" title="二、技术实现"></a>二、技术实现</h4><h5 id="1、云端处理"><a href="#1、云端处理" class="headerlink" title="1、云端处理"></a>1、云端处理</h5><p>云游戏服务器解决方案有两种，有虚拟机和物理机。虚拟机由专业的显卡等硬件组合，通过集群统一调度管理资源。物理机有PC农场提供的物理机，其中利用无盘化，即将存储和计算分开，从而提高了资源的利用率。每个玩家都有独立的进程去计算和保存玩家数据，而游戏初始数据可以共享。</p>
+<h5 id="2、云端屏幕像素实时抓取"><a href="#2、云端屏幕像素实时抓取" class="headerlink" title="2、云端屏幕像素实时抓取"></a>2、云端屏幕像素实时抓取</h5><p>有多种技术方案去抓取屏幕像素。如下所示：<br><img src="evernotecid://4DB8DB53-1814-4A14-B958-C27969DAC6E3/appyinxiangcom/10748170/ENResource/p406" alt="2c439b1de326deee22d23eda467fe2b2.png"></p>
+<h5 id="3、云端视频编码"><a href="#3、云端视频编码" class="headerlink" title="3、云端视频编码"></a>3、云端视频编码</h5><p>视频编码标准一般有H264和H265。H265优化了相关算法。编码分为软编码和硬编码。软编码利用CPU进行编码，优点是质量好，缺点是速度慢。硬编码使用GPU进行，加上专门的编码硬件，可以保证速度和质量都比较高。在云游戏中，由于对时延要求高，一般使用硬编码。</p>
+<p>无B编码。编码分为帧内编码帧I、预测编码帧P，双向预测编码帧B。云游戏为了快速，使用了无B编码。</p>
+<h5 id="4、推流"><a href="#4、推流" class="headerlink" title="4、推流"></a>4、推流</h5><p>使用QUIC协议，在UDP的基础上，拥有CPU的优点，增加了数据冗余，能在丢包时恢复数据，从而解决UDP容易丢包的问题。</p>
+<h5 id="5、传输"><a href="#5、传输" class="headerlink" title="5、传输"></a>5、传输</h5><p>使用全光网络，即光变为电，电变为光，这两个流程只在推流端和终端进行，中奖部分全部由光去传输，从而提高传输效率。终端使用最新的wifi-6技术，能大幅度加快网络接受。</p>
+<h5 id="6、视频解码"><a href="#6、视频解码" class="headerlink" title="6、视频解码"></a>6、视频解码</h5><p>解码也分为软解码和硬解码，一般使用硬解码。</p>
+<h4 id="三、体验和指标"><a href="#三、体验和指标" class="headerlink" title="三、体验和指标"></a>三、体验和指标</h4><p>因为云游戏比本地游戏多了云端抓屏、编码、网络传输、解码等流程，导致出现了延时和画面影响。所以流程的任何一个环节出问题都会影响到游戏体验。<br>玩家对游戏画面的要求，帧率需要达到60以上。对延时专业玩家需求10ms一下。网络抖动也会造成在帧率达到要求的情况下，出现丢帧的情况，也是影响游戏体验的因素。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2022/02/19/%E4%BA%91%E6%B8%B8%E6%88%8F/" data-id="cli7399bw0006ov6p3ohvfq3i" data-title="云游戏" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-聊天室自动分房间设计" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/02/13/%E8%81%8A%E5%A4%A9%E5%AE%A4%E8%87%AA%E5%8A%A8%E5%88%86%E6%88%BF%E9%97%B4%E8%AE%BE%E8%AE%A1/" class="article-date">
+  <time class="dt-published" datetime="2022-02-13T07:14:54.000Z" itemprop="datePublished">2022-02-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/02/13/%E8%81%8A%E5%A4%A9%E5%AE%A4%E8%87%AA%E5%8A%A8%E5%88%86%E6%88%BF%E9%97%B4%E8%AE%BE%E8%AE%A1/">聊天室自动分房间设计</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="聊天室自动分房间设计"><a href="#聊天室自动分房间设计" class="headerlink" title="聊天室自动分房间设计"></a>聊天室自动分房间设计</h3><blockquote>
+<p>在一个直播聊天室中，如果每个人发言的消息都会被房间内所有人收到，那当房间人数达到十万时，并发量将达到一百万。为了解决这个问题，需要做分房间。</p>
+</blockquote>
+<h4 id="一、设计思路"><a href="#一、设计思路" class="headerlink" title="一、设计思路"></a>一、设计思路</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">   participant client as 客户端</span><br><span class="line">   participant chat as 聊天室服务端</span><br><span class="line">   participant queue as 队列</span><br><span class="line">   client-&gt;&gt;+chat: 连接socket</span><br><span class="line">   alt 读取redis，判断当前是否开启了分房间？返回应该加入的分房间号</span><br><span class="line">       chat--&gt;&gt;client : 将分房间跟userId对应起来，保存到redis</span><br><span class="line">   else</span><br><span class="line">       chat--&gt;&gt;client : 正常登录</span><br><span class="line">   end</span><br><span class="line">   chat--&gt;&gt;-client: 返回数据</span><br><span class="line">   client-&gt;&gt;+chat: 登录聊天室，发送LOGIN</span><br><span class="line">   alt 当前房间是否在配置中心配置了自动分房间功能</span><br><span class="line">       alt 当前房间人数是否超过1万人？</span><br><span class="line">           chat--&gt;&gt;queue : 加入队列</span><br><span class="line">           chat--&gt;&gt;client : 正常登录</span><br><span class="line">       else</span><br><span class="line">           chat--&gt;&gt;client : 正常登录</span><br><span class="line">       end</span><br><span class="line">   else</span><br><span class="line">       chat--&gt;&gt;client : 正常登录</span><br><span class="line">   end</span><br><span class="line">   chat--&gt;&gt;-client: 返回数据</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2022/02/13/%E8%81%8A%E5%A4%A9%E5%AE%A4%E8%87%AA%E5%8A%A8%E5%88%86%E6%88%BF%E9%97%B4%E8%AE%BE%E8%AE%A1/" data-id="cli7399by0008ov6p1eo1ffhs" data-title="聊天室自动分房间设计" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-什么是费曼学习法" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/02/13/%E4%BB%80%E4%B9%88%E6%98%AF%E8%B4%B9%E6%9B%BC%E5%AD%A6%E4%B9%A0%E6%B3%95/" class="article-date">
+  <time class="dt-published" datetime="2022-02-13T07:14:09.000Z" itemprop="datePublished">2022-02-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/02/13/%E4%BB%80%E4%B9%88%E6%98%AF%E8%B4%B9%E6%9B%BC%E5%AD%A6%E4%B9%A0%E6%B3%95/">什么是费曼学习法</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="什么是费曼学习法"><a href="#什么是费曼学习法" class="headerlink" title="什么是费曼学习法"></a>什么是费曼学习法</h3><blockquote>
+<p>学习方法有很多种，听说费曼学习法很有效，今天就来学习一下。参考资料：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/88209825">费曼学习法</a></p>
+</blockquote>
+<h4 id="一、原理"><a href="#一、原理" class="headerlink" title="一、原理"></a>一、原理</h4><p>将学习到的知识，自己通过某种途径表达出来。在表达的过程中，可以查漏补缺，从而加深对学到的知识的理解和深入学习。</p>
+<h4 id="二、实践"><a href="#二、实践" class="headerlink" title="二、实践"></a>二、实践</h4><ol>
+<li>看书学习</li>
+<li>用自己的语言写成文章，并检查文章是否大部分人都能看懂。（发布到博客，并注意评论）</li>
+<li>如果学习的内容是可以实践的，就动手实践一下。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2022/02/13/%E4%BB%80%E4%B9%88%E6%98%AF%E8%B4%B9%E6%9B%BC%E5%AD%A6%E4%B9%A0%E6%B3%95/" data-id="cli7399bw0005ov6p8d4lbcvp" data-title="什么是费曼学习法" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-跳跃表" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2020/07/12/%E8%B7%B3%E8%B7%83%E8%A1%A8/" class="article-date">
+  <time class="dt-published" datetime="2020-07-12T07:13:36.000Z" itemprop="datePublished">2020-07-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2020/07/12/%E8%B7%B3%E8%B7%83%E8%A1%A8/">跳跃表</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h3><blockquote>
+<p>redis中的有序集合以及集群中的数据结构用到了跳跃表，其它地方都没有了。</p>
+</blockquote>
+<h4 id="一、什么是链表"><a href="#一、什么是链表" class="headerlink" title="一、什么是链表"></a>一、什么是链表</h4><p>由于跳跃表是在链表的基础上进行改进的，所以这里先简单说明一下什么是链表。（如果你知道链表的话，可以直接跳过）。<br><img src="evernotecid://4DB8DB53-1814-4A14-B958-C27969DAC6E3/appyinxiangcom/10748170/ENResource/p315" alt="d2f3a68350547935c62cbf4208b860a5.png"></p>
+<p>如上图，链表的值指向头部<code>head</code>，<code>head</code>再指向下一个值。所以，每个结点包含了值和指向下一个值的指针。就这么简单。具体实现可以参考<code>github</code>上的<a target="_blank" rel="noopener" href="https://github.com/trekhleb/javascript-algorithms/blob/master/src/data-structures/linked-list/README.zh-CN.md">库</a>。</p>
+<p>在链表结构下，如果你要查找某个值在链表中的位置，需要从链表的头部开始往下找。最大计算时间为<code>n</code>。除了查询，插入新的值或者删除指定值，都需要从头部开始查找。</p>
+<h4 id="二、跳跃表"><a href="#二、跳跃表" class="headerlink" title="二、跳跃表"></a>二、跳跃表</h4><p>为了提高链表查找的效率，可以将链表改进为跳跃表。跳跃表如下图所示：<br><img src="evernotecid://4DB8DB53-1814-4A14-B958-C27969DAC6E3/appyinxiangcom/10748170/ENResource/p316" alt="b3b48c46cde7ee4046bcdac1ebc4a63b.png"></p>
+<p>这里假设存入链表的值是数字，有顺序的。在原有链表的基础上，需要建立起它链表，并将其根原链表联系起来。在查找时，可以先找到最顶层的，然后逐渐缩小范围。这样的时间为<code>O(lgn)</code>。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2020/07/12/%E8%B7%B3%E8%B7%83%E8%A1%A8/" data-id="cli7399c40009ov6p9mn54mg1" data-title="跳跃表" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-node在使用socket时，如何面对高并发" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/11/24/node%E5%9C%A8%E4%BD%BF%E7%94%A8socket%E6%97%B6%EF%BC%8C%E5%A6%82%E4%BD%95%E9%9D%A2%E5%AF%B9%E9%AB%98%E5%B9%B6%E5%8F%91/" class="article-date">
+  <time class="dt-published" datetime="2019-11-24T07:13:06.000Z" itemprop="datePublished">2019-11-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2019/11/24/node%E5%9C%A8%E4%BD%BF%E7%94%A8socket%E6%97%B6%EF%BC%8C%E5%A6%82%E4%BD%95%E9%9D%A2%E5%AF%B9%E9%AB%98%E5%B9%B6%E5%8F%91/">node在使用socket时，如何面对高并发</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="服务器如何应对聊天室高峰期（使用node搭建socket服务）"><a href="#服务器如何应对聊天室高峰期（使用node搭建socket服务）" class="headerlink" title="服务器如何应对聊天室高峰期（使用node搭建socket服务）"></a>服务器如何应对聊天室高峰期（使用node搭建socket服务）</h3><blockquote>
+<p>聊天室在直播场景中应用广泛，而直播的盛行，导致聊天室经常处于人数众多，即高并发的状态。本文主要讲解队列在聊天室高并发下的应用。</p>
+</blockquote>
+<h4 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h4><p>在node中使用socket.io去实现聊天室，可以同时兼容ie8等环境。加上node通过事件循环机制，以及异步的I&#x2F;O操作，从而可以实现大量的聊天室消息同时并发，但不会阻塞主进程的运行，使聊天室消息可以及时被响应。<br>但是，当聊天室消息过多时，对服务器的带宽和网速要求提高。这时不仅需要增加服务器（使用负载均衡），提高服务器带宽，还要对发送的消息实现控制，从而控制带宽。通过队列，可以实现对聊天消息量的控制。</p>
+<h4 id="二、队列"><a href="#二、队列" class="headerlink" title="二、队列"></a>二、队列</h4><p>日常生活中，我们做很多事情都需要排队，比如上公交车的时候。而排队都是先排先进的，而队列也是这样。队列就是一组数据，先进先出。如下图所示：<br><img src="evernotecid://4DB8DB53-1814-4A14-B958-C27969DAC6E3/appyinxiangcom/10748170/ENResource/p296" alt="5fed150010168950017d1e38c6967757.png"></p>
+<h4 id="三、队列在高并发中的作用"><a href="#三、队列在高并发中的作用" class="headerlink" title="三、队列在高并发中的作用"></a>三、队列在高并发中的作用</h4><p>当聊天室同时存在多人时，需要将消息同时发送给多个人。比如，房间同时存在一万人，如果每个人发一条消息，那就有1亿的并发量。由此可以看出，控制消息的发送，可以从房间的在线人数入手。</p>
+<h5 id="1、流程设计"><a href="#1、流程设计" class="headerlink" title="1、流程设计"></a>1、流程设计</h5><p>假设在线人数为count，则设计如下流程图：<br><img src="evernotecid://4DB8DB53-1814-4A14-B958-C27969DAC6E3/appyinxiangcom/10748170/ENResource/p299" alt="dce329e9c13e4d6853dc2a3648eb6f19.png"></p>
+<ul>
+<li>当聊天室收到消息时，需要判断房间在线人数，决定是否加入队列，队列使用redis去实现。</li>
+<li>开启一个独立的node进程，不断地定时，去检查redis队列。如果有数据，则出队列并发送，并将在线人数count进行累加，保存在total里面。</li>
+<li>每次发送完数据，就检查total的值，如果超过一定人数，就停止出队列，定时一段时间后，再去队列获取数据。</li>
+</ul>
+<h5 id="2、具体代码实践示例"><a href="#2、具体代码实践示例" class="headerlink" title="2、具体代码实践示例"></a>2、具体代码实践示例</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 队列广播</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">EmitMsgUseQueue</span> &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">&#123;</span></span><br><span class="line"><span class="params">    checkTime = DEFAULT_CHECK_TIME,</span></span><br><span class="line"><span class="params">    runTime = DEFAULT_RUN_TIME,</span></span><br><span class="line"><span class="params">    io, client, queue</span></span><br><span class="line"><span class="params">  &#125; = &#123;&#125;</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">checkTime</span> = checkTime;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">runTime</span> = runTime;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">io</span> = io;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">client</span> = client;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">queue</span> = queue;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">run</span>();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">run</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> that = <span class="variable language_">this</span>;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="title function_">checkAndEmit</span>().<span class="title function_">then</span>(<span class="function">() =&gt;</span> <span class="variable language_">this</span>.<span class="property">run</span>.<span class="title function_">call</span>(that));</span><br><span class="line">    &#125;, <span class="variable language_">this</span>.<span class="property">checkTime</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">checkAndEmit</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">pop</span>().<span class="title function_">then</span>(<span class="function"><span class="params">emitMsg</span> =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">if</span> (!emitMsg) <span class="keyword">return</span> <span class="title function_">resolve</span>();</span><br><span class="line">          <span class="variable language_">this</span>.<span class="title function_">emit</span>(emitMsg);</span><br><span class="line">          <span class="title function_">resolve</span>(<span class="variable language_">this</span>.<span class="title function_">checkAndEmit</span>());</span><br><span class="line">          <span class="keyword">return</span>;</span><br><span class="line">        &#125;).<span class="title function_">catch</span>(reject);</span><br><span class="line">      &#125;, <span class="variable language_">this</span>.<span class="property">runTime</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">pop</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">client</span>.<span class="title function_">lpop</span>(<span class="variable language_">this</span>.<span class="property">queue</span>).<span class="title function_">then</span>(<span class="function"><span class="params">list</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (!list) <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">      <span class="comment">// logger.info(list);</span></span><br><span class="line">      <span class="keyword">const</span> emitMsg = <span class="title function_">parseJson</span>(list);</span><br><span class="line">      <span class="keyword">if</span> (!emitMsg) <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">      <span class="keyword">return</span> emitMsg;</span><br><span class="line">    &#125;).<span class="title function_">catch</span>(<span class="function"><span class="params">err</span> =&gt;</span> logger.<span class="title function_">error</span>(<span class="string">`获取广播消息队列<span class="subst">$&#123;<span class="variable language_">this</span>.queue&#125;</span>时出错`</span>, err));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">emit</span>(<span class="params">emitMsg</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">done</span> = (<span class="params">&#123; sendData, roomId &#125;</span>) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (roomId) &#123;</span><br><span class="line">        logger.<span class="title function_">info</span>(sendData);</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">io</span>.<span class="title function_">to</span>(roomId).<span class="title function_">emit</span>(<span class="string">&#x27;message&#x27;</span>, <span class="title function_">stringify</span>(sendData));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title class_">Array</span>.<span class="title function_">isArray</span>(emitMsg)) &#123;</span><br><span class="line">      emitMsg.<span class="title function_">forEach</span>(<span class="function"><span class="params">el</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="title function_">done</span>(el);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="title function_">done</span>(emitMsg);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">pushMsgToQueueForAsyncEmit</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">pushMsgToQueueForAsyncEmit</span>(&#123; obj, <span class="attr">client</span>: <span class="variable language_">this</span>.<span class="property">client</span>, <span class="attr">queue</span>: <span class="variable language_">this</span>.<span class="property">queue</span> &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面是一个基础类，实现基本的定时任务，以及检查队列，发送队列，而下面的类则增加了对在线人数的检查。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">// 根据count来设置队列广播</span><br><span class="line">class EmitMsgUseQueueByCount extends EmitMsgUseQueue &#123;</span><br><span class="line">  constructor(&#123;</span><br><span class="line">    checkTime = DEFAULT_CHECK_TIME,</span><br><span class="line">    runTime = DEFAULT_RUN_TIME,</span><br><span class="line">    totalCount = MAX_COUNT_SECOND,</span><br><span class="line">    io, client, queue,</span><br><span class="line">  &#125; = &#123;&#125;) &#123;</span><br><span class="line">    super(&#123; checkTime, runTime, io, client, queue &#125;);</span><br><span class="line">    this.totalCount = totalCount;</span><br><span class="line">  &#125;</span><br><span class="line">  checkAndEmit() &#123;</span><br><span class="line">    let currentCount = 0;</span><br><span class="line">    const doIt = () =&gt;</span><br><span class="line">      this.pop().then(emitMsg =&gt; &#123;</span><br><span class="line">        if (!emitMsg) return &#x27;over&#x27;;</span><br><span class="line">        const &#123; count &#125; = emitMsg;</span><br><span class="line">        currentCount += parseInt(count);</span><br><span class="line">        this.emit(emitMsg);</span><br><span class="line">        return currentCount &lt; this.totalCount ? &#x27;keep&#x27; : &#x27;outdo&#x27;;</span><br><span class="line">      &#125;);</span><br><span class="line">    return new Promise(resolve =&gt; &#123;</span><br><span class="line">      setTimeout(async () =&gt; &#123;</span><br><span class="line">        let isKeep = true;</span><br><span class="line">        while (isKeep) &#123;</span><br><span class="line">          const result = await doIt();</span><br><span class="line">          switch (result) &#123;</span><br><span class="line">            case &#x27;outdo&#x27;:</span><br><span class="line">              isKeep = false;</span><br><span class="line">              currentCount = 0;</span><br><span class="line">              resolve(this.checkAndEmit());</span><br><span class="line">              break;</span><br><span class="line">            case &#x27;over&#x27;:</span><br><span class="line">              isKeep = false;</span><br><span class="line">              resolve();</span><br><span class="line">              break;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, this.runTime);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2019/11/24/node%E5%9C%A8%E4%BD%BF%E7%94%A8socket%E6%97%B6%EF%BC%8C%E5%A6%82%E4%BD%95%E9%9D%A2%E5%AF%B9%E9%AB%98%E5%B9%B6%E5%8F%91/" data-id="cli7399bu0003ov6pa8qvgiks" data-title="node在使用socket时，如何面对高并发" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-在node中使用单元测试" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2019/08/25/%E5%9C%A8node%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="article-date">
+  <time class="dt-published" datetime="2019-08-25T07:12:29.000Z" itemprop="datePublished">2019-08-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2019/08/25/%E5%9C%A8node%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">在node中使用单元测试</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="在node中使用单元测试"><a href="#在node中使用单元测试" class="headerlink" title="在node中使用单元测试"></a>在node中使用单元测试</h2><blockquote>
+<p>背景：目前聊天室开发时，都是在前端页面进行调试。在聊天室项目本身没有提供测试的环境。所以这里开始引入单元测试，方便后面的开发。</p>
+</blockquote>
+<h4 id="1、使用的工具"><a href="#1、使用的工具" class="headerlink" title="1、使用的工具"></a>1、使用的工具</h4><p>主要是用<a target="_blank" rel="noopener" href="https://mochajs.org/#asynchronous-code">mocha</a>和node原生的断言<a target="_blank" rel="noopener" href="https://nodejs.org/api/assert.html">assert</a>。</p>
+<p>安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install mocha --save-dev</span><br></pre></td></tr></table></figure>
+<p>可以局部安装并在package.json中，添加test，如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&quot;test&quot;: &quot;mocha ./test/*.js&quot;</span><br><span class="line">```````</span><br><span class="line">这样所有测试文件都会被执行。</span><br><span class="line">也可以全局安装，如</span><br></pre></td></tr></table></figure>
+<p>npm install mocha -g</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">执行单个测试文件，直接在命令行中运行，如执行测试文件testForSign.js</span><br></pre></td></tr></table></figure>
+<p>mocha test&#x2F;testForsign.js</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#### 2、例子</span><br><span class="line">从聊天室出发，我们有接口、socket消息、通用方法、数据库测试等，下面进行举例。</span><br><span class="line">##### 接口</span><br><span class="line">下面介绍对开始签到接口的测试：</span><br><span class="line">`````javascript</span><br><span class="line">const &#123; ajax, createApiSign &#125; = require(&#x27;../common/common&#x27;)();</span><br><span class="line">const assert = require(&#x27;assert&#x27;);</span><br><span class="line"></span><br><span class="line">describe(&#x27;to test sign&#x27;, () =&gt; &#123; // 对测试的描述</span><br><span class="line">  it(&#x27;test request port&#x27;, async () =&gt; &#123; // 开始一次测试</span><br><span class="line">  // 使用try捕捉所有错误，assert断言本身不通过时，也会抛出错误</span><br><span class="line">    try &#123;</span><br><span class="line">      const result = await toStartSign();</span><br><span class="line">      // 这里断言接口返回是否为200，如果不是，会抛出错误。这里第三个参数可以加上，表示需要的错误提示信息。</span><br><span class="line">      assert.equal(result.code, 200);</span><br><span class="line">    &#125; catch (err) &#123;</span><br><span class="line">      // 这里直接使用fail抛出异常</span><br><span class="line">      assert.fail(&#x27;request startSign port fail, &#x27; + err.message);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// 请求开始签到接口的函数</span><br><span class="line">function toStartSign() &#123;</span><br><span class="line">  const formData = &#123;</span><br><span class="line">    roomId: &#x27;200060&#x27;,</span><br><span class="line">    message: &#x27;开始签到啦！！！！&#x27;,</span><br><span class="line">    userId: &#x27;1566315813544&#x27;,</span><br><span class="line">    timestamp: Date.now(),</span><br><span class="line">  &#125;;</span><br><span class="line">  formData.sign = createApiSign(&#x27;polyvChatSign&#x27;, formData);</span><br><span class="line">  return ajax(&#123;</span><br><span class="line">    url: &#x27;https://apichat.polyv.net/front/startSign&#x27;,</span><br><span class="line">    formData,</span><br><span class="line">    dataType: &#x27;body&#x27;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在命令行中输入<code>mocha test/testForSign.js</code>，执行后的结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0 passing (244ms)</span><br><span class="line">  1 failing</span><br><span class="line"></span><br><span class="line">  1) to <span class="built_in">test</span> sign</span><br><span class="line">       <span class="built_in">test</span> request port:</span><br><span class="line">     AssertionError [ERR_ASSERTION]: request startSign port fail, 找不到用户socketId，用户未登陆聊天室</span><br><span class="line">      at Context.it (<span class="built_in">test</span>/testForSign.js:10:14)</span><br><span class="line">      at process._tickCallback (internal/process/next_tick.js:68:7)</span><br></pre></td></tr></table></figure>
+<p>由于运行时未登陆聊天室，所以接口返回的状态码不是200</p>
+<h5 id="socket消息"><a href="#socket消息" class="headerlink" title="socket消息"></a>socket消息</h5><p>使用模块<code>socket.io-client</code>连接聊天室，如</p>
+<pre><code class="javascript">// 连接聊天室，公共方法，在common.js里面
+connectSocket(&#123; userId = &#39;123456&#39;, nick = &#39;yang&#39;, roomId = 200060, type = &#39;user&#39; &#125; = &#123;&#125;) &#123;
+    // 连接聊天室
+    const socket = io.connect(&#39;ws://chat.polyv.net&#39;, &#123;
+      &#39;query&#39;: &#39;token=&#39;,
+      &#39;transports&#39;: [&#39;websocket&#39;]
+    &#125;);
+    if (!(userId &amp;&amp; nick &amp;&amp; roomId &amp;&amp; type)) return socket;
+    // 发送login事件进行登陆
+    socket.on(&#39;connect&#39;, function () &#123;
+      var loginData = &#123;
+        EVENT: &#39;LOGIN&#39;,
+        values: [nick, &#39;https://livestatic.videocc.net/assets/wimages/missing_face.png&#39;, userId],
+        roomId,
+        type
+      &#125;;
+      socket.emit(&#39;message&#39;,JSON.stringify(loginData));
+    &#125;);
+    return socket;
+&#125;
+</code></pre>
+<p>下面测试开始签到，使用事件<code>SIGN_IN</code>来举例测试：</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2019/08/25/%E5%9C%A8node%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" data-id="cli7399bx0007ov6ph7ms61ni" data-title="在node中使用单元测试" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -251,7 +656,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://myyang2016.github.io/2019/04/21/canvas%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%94%BB%E6%9D%BF/" data-id="cli72yd3t0000wg6phsrvfhqg" data-title="canvas实现的画板" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://myyang2016.github.io/2019/04/21/canvas%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%94%BB%E6%9D%BF/" data-id="cli7399bl0000ov6paroyhre6" data-title="canvas实现的画板" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -281,7 +686,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li></ul>
     </div>
   </div>
 
@@ -294,11 +699,23 @@
       <ul>
         
           <li>
-            <a href="/2023/05/28/hello-world/">Hello World</a>
+            <a href="/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/">nodejs内核原理</a>
           </li>
         
           <li>
-            <a href="/2019/04/21/canvas%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%94%BB%E6%9D%BF/">canvas实现的画板</a>
+            <a href="/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/">websocket学习</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/">nodejs中的流Stream</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/19/%E4%BA%91%E6%B8%B8%E6%88%8F/">云游戏</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/13/%E8%81%8A%E5%A4%A9%E5%AE%A4%E8%87%AA%E5%8A%A8%E5%88%86%E6%88%BF%E9%97%B4%E8%AE%BE%E8%AE%A1/">聊天室自动分房间设计</a>
           </li>
         
       </ul>

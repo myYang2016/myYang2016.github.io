@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>nodejs内核原理 | 羊锡贵的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="nodejs内核原理 这是书籍《Node.js设计模式》的读书笔记。  一、nodejs遵循的设计原则设计原则影响了每个技术栈的特点。nodejs有一下设计原则：  短小精悍（便于理解和维护） 提供的模块尽量不去扩展功能，且功能越简单越好（防止模块越变越大，如果需要新增功能）  二、事件循环io操作，就是需要电脑做一些任务，这些任务单单本机的cpu是无法独立完成的，需要cpu和其他外接设备或者网络">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nodejs内核原理">
+<meta property="og:url" content="https://myyang2016.github.io/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="羊锡贵的博客">
+<meta property="og:description" content="nodejs内核原理 这是书籍《Node.js设计模式》的读书笔记。  一、nodejs遵循的设计原则设计原则影响了每个技术栈的特点。nodejs有一下设计原则：  短小精悍（便于理解和维护） 提供的模块尽量不去扩展功能，且功能越简单越好（防止模块越变越大，如果需要新增功能）  二、事件循环io操作，就是需要电脑做一些任务，这些任务单单本机的cpu是无法独立完成的，需要cpu和其他外接设备或者网络">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-13T07:14:32.000Z">
+<meta property="article:modified_time" content="2023-05-28T07:14:43.902Z">
+<meta property="article:author" content="羊锡贵">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="羊锡贵的博客" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">羊锡贵的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">一个程序员的日常</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://myYang2016.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-nodejs内核原理" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/" class="article-date">
+  <time class="dt-published" datetime="2023-02-13T07:14:32.000Z" itemprop="datePublished">2023-02-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      nodejs内核原理
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="nodejs内核原理"><a href="#nodejs内核原理" class="headerlink" title="nodejs内核原理"></a>nodejs内核原理</h3><blockquote>
+<p>这是书籍《Node.js设计模式》的读书笔记。</p>
+</blockquote>
+<h4 id="一、nodejs遵循的设计原则"><a href="#一、nodejs遵循的设计原则" class="headerlink" title="一、nodejs遵循的设计原则"></a>一、nodejs遵循的设计原则</h4><p>设计原则影响了每个技术栈的特点。nodejs有一下设计原则：</p>
+<ul>
+<li>短小精悍（便于理解和维护）</li>
+<li>提供的模块尽量不去扩展功能，且功能越简单越好（防止模块越变越大，如果需要新增功能）</li>
+</ul>
+<h4 id="二、事件循环"><a href="#二、事件循环" class="headerlink" title="二、事件循环"></a>二、事件循环</h4><p>io操作，就是需要电脑做一些任务，这些任务单单本机的cpu是无法独立完成的，需要cpu和其他外接设备或者网络一起完成。所以，io操作比一般的cpu计算要慢。如果io操作是同步的，即每次io操作都要等待完成，就会容易造成等待时间长，最后导致运行缓慢。一般的解决方案是把io操作放到线程去完成。但是在线程中，由于需要等待io操作完成，导致线程很多时候处于闲置等待状态，而且线程也会占据cpu和内存，所以一个io操作对应一个线程也是不可取的。nodejs采用的是，在一个线程中管理多个io操作（多路复用），并且利用回调来作为io操作结果的响应（解多路复用），从而减少了内存和cpu的占用。</p>
+<p>事件循环，即将所有的io操作都放到数组中，利用不同系统的事件分离管理机制，不断循环等待io操作的处理情况，完成的话就可以通过回调返回结果。</p>
+<h4 id="三、nodejs的核心模块"><a href="#三、nodejs的核心模块" class="headerlink" title="三、nodejs的核心模块"></a>三、nodejs的核心模块</h4><ul>
+<li>libuv，实现事件循环机制，能兼容各个平台的事件分离管理机制的差异。</li>
+<li>javascript基础功能库</li>
+<li>v8引擎，让nodejs能使用js和c++</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/" data-id="cli7399bs0002ov6p21o45ekf" data-title="nodejs内核原理" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">websocket学习</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/">nodejs内核原理</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/">websocket学习</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/">nodejs中的流Stream</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/19/%E4%BA%91%E6%B8%B8%E6%88%8F/">云游戏</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/13/%E8%81%8A%E5%A4%A9%E5%AE%A4%E8%87%AA%E5%8A%A8%E5%88%86%E6%88%BF%E9%97%B4%E8%AE%BE%E8%AE%A1/">聊天室自动分房间设计</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 羊锡贵<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

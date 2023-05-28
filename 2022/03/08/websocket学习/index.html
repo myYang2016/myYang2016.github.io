@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>websocket学习 | 羊锡贵的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="websocket学习 系统地学习websocket  什么是websocket现代web应用中，实现信息交互的需求比较复杂，需要全双工通信。而websocket协议就是针对这点，适合文本信息的双向通信的。而传统的http，是单向的。而可以利用轮询、长链接等手段，也能在http下实现双向通信，但是由于http流程繁琐，且每次请求携带的头部信息比较多，导致贷款和延时比较高，性能低。除了websock">
+<meta property="og:type" content="article">
+<meta property="og:title" content="websocket学习">
+<meta property="og:url" content="https://myyang2016.github.io/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="羊锡贵的博客">
+<meta property="og:description" content="websocket学习 系统地学习websocket  什么是websocket现代web应用中，实现信息交互的需求比较复杂，需要全双工通信。而websocket协议就是针对这点，适合文本信息的双向通信的。而传统的http，是单向的。而可以利用轮询、长链接等手段，也能在http下实现双向通信，但是由于http流程繁琐，且每次请求携带的头部信息比较多，导致贷款和延时比较高，性能低。除了websock">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-08T07:16:26.000Z">
+<meta property="article:modified_time" content="2023-05-28T07:16:42.317Z">
+<meta property="article:author" content="羊锡贵">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="羊锡贵的博客" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">羊锡贵的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">一个程序员的日常</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://myYang2016.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-websocket学习" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/" class="article-date">
+  <time class="dt-published" datetime="2022-03-08T07:16:26.000Z" itemprop="datePublished">2022-03-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      websocket学习
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h3 id="websocket学习"><a href="#websocket学习" class="headerlink" title="websocket学习"></a>websocket学习</h3><blockquote>
+<p>系统地学习websocket</p>
+</blockquote>
+<h4 id="什么是websocket"><a href="#什么是websocket" class="headerlink" title="什么是websocket"></a>什么是websocket</h4><p>现代web应用中，实现信息交互的需求比较复杂，需要全双工通信。而websocket协议就是针对这点，适合文本信息的双向通信的。<br>而传统的http，是单向的。而可以利用轮询、长链接等手段，也能在http下实现双向通信，但是由于http流程繁琐，且每次请求携带的头部信息比较多，导致贷款和延时比较高，性能低。<br>除了websocket，实时双向通信还有SSE、SPDY、webrtc等。SSE主要用来服务端单向通知客户端信息的。SPDY是在文档信息实时通信应用的。WEBRTC是音视频实时通信的。</p>
+<h4 id="websocket-api"><a href="#websocket-api" class="headerlink" title="websocket api"></a>websocket api</h4><p>可以使用on<event>或者addEventListen，跟js原生的事件机制是一样的。<br>事件有open、disconnect、error、close<br>有websocket.readyState表示当前socket的链接状态，0表示正在链接中，1表示链接成功。<br>可以传送字符串和二进制类型，其中可以跟File和webrtc等api结合使用。</p>
+<h4 id="websocket-协议"><a href="#websocket-协议" class="headerlink" title="websocket 协议"></a>websocket 协议</h4><p>websocket是在http协议的基础上，加上upgrade：websocket，来对协议进行升级成为websocket连接。<br>连接需要发送响应键值。客户端连接是，通过set-websocket-key来传递键值，服务端经过添加协议串并hash后，通过字段set-websocket-Accept返回。<br>websocket本身可以关闭，但也有各种异常关闭。</p>
+<h4 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h4><p>每次websocket握手连接时，携带的set-websocket-key以及服务端响应的set-websocket-Accept都是为了保护非websocket服务器不会收到跨协议攻击。因为如果没有set-websocket-Accept，非websocket服务器会被当成websocket使用，从而造成跨协议攻击。屏蔽主要是在传递的websocket消息中，对二进制进行异或操作，从而起到安全作用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://myyang2016.github.io/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/" data-id="cli7399bv0004ov6p9rk3e83k" data-title="websocket学习" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          nodejs内核原理
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">nodejs中的流Stream</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/02/">二月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/">nodejs内核原理</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/">websocket学习</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/">nodejs中的流Stream</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/19/%E4%BA%91%E6%B8%B8%E6%88%8F/">云游戏</a>
+          </li>
+        
+          <li>
+            <a href="/2022/02/13/%E8%81%8A%E5%A4%A9%E5%AE%A4%E8%87%AA%E5%8A%A8%E5%88%86%E6%88%BF%E9%97%B4%E8%AE%BE%E8%AE%A1/">聊天室自动分房间设计</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 羊锡贵<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
