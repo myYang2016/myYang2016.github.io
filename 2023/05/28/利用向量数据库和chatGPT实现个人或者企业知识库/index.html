@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   
   
-  <title>nodejs中的流Stream | 羊锡贵的博客</title>
+  <title>利用向量数据库和chatGPT实现个人或者企业知识库 | 羊锡贵的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="nodejs中的流Stream 了解一下stream，平时用nodejs写的接口，或者文件上传等，其原理都是流，所以很有必要仔细了解流的原理。  一、自己的理解在处理数据时，可能需要经过多个步骤。比如编译一段代码，需要先读取文件，然后遍历文件中的字符，解析后再写入新的文件中。这个过程可以有两种方式去实现。第一种，直接读取整个文件，读取完成再遍历并生成编译结果，然后再写入新的文件。另一种是，一遍读取">
+  <meta name="description" content="在当今信息爆炸的时代，人们需要快速有效地获取所需的信息。对于个人和企业而言，建立一个知识库可以帮助他们更好地管理和利用已有的知识。而利用向量数据库和chatGPT技术，则可以更好地实现这一目标。向量数据库是一种基于向量相似度的数据库，它可以实现快速高效地搜索和匹配相似的向量。而chatGPT是一种自然语言处理技术，可以生成高质量的自然语言文本。结合这两种技术，可以实现一个智能知识库，让人们可以更好">
 <meta property="og:type" content="article">
-<meta property="og:title" content="nodejs中的流Stream">
-<meta property="og:url" content="https://myyang2016.github.io/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/index.html">
+<meta property="og:title" content="利用向量数据库和chatGPT实现个人或者企业知识库">
+<meta property="og:url" content="https://myyang2016.github.io/2023/05/28/%E5%88%A9%E7%94%A8%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8CchatGPT%E5%AE%9E%E7%8E%B0%E4%B8%AA%E4%BA%BA%E6%88%96%E8%80%85%E4%BC%81%E4%B8%9A%E7%9F%A5%E8%AF%86%E5%BA%93/index.html">
 <meta property="og:site_name" content="羊锡贵的博客">
-<meta property="og:description" content="nodejs中的流Stream 了解一下stream，平时用nodejs写的接口，或者文件上传等，其原理都是流，所以很有必要仔细了解流的原理。  一、自己的理解在处理数据时，可能需要经过多个步骤。比如编译一段代码，需要先读取文件，然后遍历文件中的字符，解析后再写入新的文件中。这个过程可以有两种方式去实现。第一种，直接读取整个文件，读取完成再遍历并生成编译结果，然后再写入新的文件。另一种是，一遍读取">
+<meta property="og:description" content="在当今信息爆炸的时代，人们需要快速有效地获取所需的信息。对于个人和企业而言，建立一个知识库可以帮助他们更好地管理和利用已有的知识。而利用向量数据库和chatGPT技术，则可以更好地实现这一目标。向量数据库是一种基于向量相似度的数据库，它可以实现快速高效地搜索和匹配相似的向量。而chatGPT是一种自然语言处理技术，可以生成高质量的自然语言文本。结合这两种技术，可以实现一个智能知识库，让人们可以更好">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-02-26T07:15:59.000Z">
-<meta property="article:modified_time" content="2023-05-28T07:16:14.856Z">
+<meta property="article:published_time" content="2023-05-28T09:52:22.000Z">
+<meta property="article:modified_time" content="2023-05-28T09:53:09.528Z">
 <meta property="article:author" content="羊锡贵">
 <meta name="twitter:card" content="summary">
   
@@ -79,10 +79,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-nodejs中的流Stream" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-利用向量数据库和chatGPT实现个人或者企业知识库" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/" class="article-date">
-  <time class="dt-published" datetime="2022-02-26T07:15:59.000Z" itemprop="datePublished">2022-02-26</time>
+    <a href="/2023/05/28/%E5%88%A9%E7%94%A8%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8CchatGPT%E5%AE%9E%E7%8E%B0%E4%B8%AA%E4%BA%BA%E6%88%96%E8%80%85%E4%BC%81%E4%B8%9A%E7%9F%A5%E8%AF%86%E5%BA%93/" class="article-date">
+  <time class="dt-published" datetime="2023-05-28T09:52:22.000Z" itemprop="datePublished">2023-05-28</time>
 </a>
     
   </div>
@@ -93,7 +93,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      nodejs中的流Stream
+      利用向量数据库和chatGPT实现个人或者企业知识库
     </h1>
   
 
@@ -101,17 +101,12 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h3 id="nodejs中的流Stream"><a href="#nodejs中的流Stream" class="headerlink" title="nodejs中的流Stream"></a>nodejs中的流Stream</h3><blockquote>
-<p>了解一下stream，平时用nodejs写的接口，或者文件上传等，其原理都是流，所以很有必要仔细了解流的原理。</p>
-</blockquote>
-<h4 id="一、自己的理解"><a href="#一、自己的理解" class="headerlink" title="一、自己的理解"></a>一、自己的理解</h4><p>在处理数据时，可能需要经过多个步骤。比如编译一段代码，需要先读取文件，然后遍历文件中的字符，解析后再写入新的文件中。这个过程可以有两种方式去实现。第一种，直接读取整个文件，读取完成再遍历并生成编译结果，然后再写入新的文件。另一种是，一遍读取文件，读取成功的部分先拿去编译，编译的同时进行编译结果的写入。这样就能充分利用多个io操作的并发进行，同时也能减少内存占用。第二种方式就是流的使用。流是一种编程设计模式，在多种语言都有实现。</p>
-<h4 id="二、nodejs中流的分类"><a href="#二、nodejs中流的分类" class="headerlink" title="二、nodejs中流的分类"></a>二、nodejs中流的分类</h4><p>分为可读流、可写流、双工流、Transform、throwFlow。<br>双工流和Transform的区别：双工流中的可读和可写是分开并独立的。Transform读入并经过处理后，可以作为可读数据输出。<br>throwFlow主要作为管道监控，或者作为一个代理管道，可以在被read的时候，再去建立真正需要的流，从而防止一开始就建立多个流，最终导致打开了过多文件而报错。</p>
-<h4 id="三、流的组合和并发执行"><a href="#三、流的组合和并发执行" class="headerlink" title="三、流的组合和并发执行"></a>三、流的组合和并发执行</h4><p>各个流可以并发执行，而不需要同步运行。这个需要在read中建立流，并马上done，不等待流的运行。<br>流也可以组合起来，变成另外一个流供控制。</p>
+        <p>在当今信息爆炸的时代，人们需要快速有效地获取所需的信息。对于个人和企业而言，建立一个知识库可以帮助他们更好地管理和利用已有的知识。而利用向量数据库和chatGPT技术，则可以更好地实现这一目标。<br>向量数据库是一种基于向量相似度的数据库，它可以实现快速高效地搜索和匹配相似的向量。而chatGPT是一种自然语言处理技术，可以生成高质量的自然语言文本。结合这两种技术，可以实现一个智能知识库，让人们可以更好地获取和管理自己的知识。<br>在实践中，已经有一些项目利用向量数据库和chatGPT技术实现了个人或企业知识库。例如，<a target="_blank" rel="noopener" href="https://github.com/myYang2016/personal-knowledge-base">personal-knowledge-base</a>就是一个基于chatGPT和向量数据库的个人知识库项目。它可以通过自然语言问题匹配和向量相似度搜索，快速地检索和获取相关知识。此外，该项目还支持多种数据源和自定义插件，可以帮助用户更好地管理和利用自己的知识。<br>当然，建立一个智能知识库并不是一件容易的事情。需要充分了解向量数据库和chatGPT技术，并且需要进行大量的数据处理和模型训练。但是，随着技术的不断发展和开源项目的不断涌现，我们有理由相信，智能知识库将越来越普及和实用。<br>总之，利用向量数据库和chatGPT技术实现个人或企业知识库是一种非常有前途和实用的方法。未来，我们可以期待更多的项目和工具涌现，让我们更好地管理和利用自己的知识。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://myyang2016.github.io/2022/02/26/nodejs%E4%B8%AD%E7%9A%84%E6%B5%81Stream/" data-id="cli78thob0000es6pb2zmejde" data-title="nodejs中的流Stream" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      <a data-url="https://myyang2016.github.io/2023/05/28/%E5%88%A9%E7%94%A8%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8CchatGPT%E5%AE%9E%E7%8E%B0%E4%B8%AA%E4%BA%BA%E6%88%96%E8%80%85%E4%BC%81%E4%B8%9A%E7%9F%A5%E8%AF%86%E5%BA%93/" data-id="cli78thor0007es6pgc329ogv" data-title="利用向量数据库和chatGPT实现个人或者企业知识库" class="article-share-link"><span class="fa fa-share">分享</span></a>
       
       
       
@@ -121,19 +116,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2022/03/08/websocket%E5%AD%A6%E4%B9%A0/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">前一篇</strong>
-      <div class="article-nav-title">
-        
-          websocket学习
-        
-      </div>
-    </a>
   
-  
-    <a href="/2022/02/19/%E4%BA%91%E6%B8%B8%E6%88%8F/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2023/02/13/nodejs%E5%86%85%E6%A0%B8%E5%8E%9F%E7%90%86/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">后一篇</strong>
-      <div class="article-nav-title">云游戏</div>
+      <div class="article-nav-title">nodejs内核原理</div>
     </a>
   
 </nav>
